@@ -1,0 +1,6 @@
+<view_states>
+   <function arity="2" name="funcT_updatesuccessdbpnamrbruto">
+      <source_tree_view last.visible.row="27" last.visible.path="/sourceRoot[[0]]/ResponseAmrBruto[[1]]/response[[0]]/ErrorMessage[[1]]" expanded.paths="/sourceRoot[[0]]/AmrBrutoCollection[[0]]&#xA;/sourceRoot[[0]]/AmrBrutoCollection[[0]]/AmrBruto[[0]]&#xA;/sourceRoot[[0]]/ResponseAmrBruto[[1]]&#xA;/sourceRoot[[0]]/ResponseAmrBruto[[1]]/response[[0]]" selected.paths="/sourceRoot[[0]]/ResponseAmrBruto[[1]]/response[[0]]/ErrorMessage[[1]]" first.visible.path="/sourceRoot[[0]]/AmrBrutoCollection[[0]]/AmrBruto[[0]]/lpKvR[[7]]" first.visible.row="9"/>
+      <target_tree_view last.visible.row="23" last.visible.path="/TargetRoot[[0]]/AmrBrutoCollection[[0]]/AmrBruto[[0]]/siteid[[21]]" expanded.paths="/TargetRoot[[0]]/AmrBrutoCollection[[0]]&#xA;/TargetRoot[[0]]/AmrBrutoCollection[[0]]/AmrBruto[[0]]" selected.paths="/TargetRoot[[0]]/AmrBrutoCollection[[0]]/AmrBruto[[0]]/soaMessage[[19]]" first.visible.path="/TargetRoot[[0]]/AmrBrutoCollection[[0]]/AmrBruto[[0]]/kwhkirim[[3]]" first.visible.row="5"/>
+   </function>
+</view_states>

@@ -1,0 +1,259 @@
+<?xml version = "1.0" encoding = "UTF-8" ?>
+<!--
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  Oracle JDeveloper BPEL Designer 
+  
+  Created: Tue May 23 09:27:58 ICT 2017
+  Author:  AndreSu
+  Type: BPEL 2.0 Process
+  Purpose: Empty BPEL Process
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+-->
+<process name="BPELAmrPemakaianSendiri"
+               targetNamespace="http://xmlns.oracle.com/IP_AMR_SOA/PNAmrPemakaianSendiri/BPELAmrPemakaianSendiri"
+               xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+               xmlns:client="http://xmlns.oracle.com/IP_AMR_SOA/PNAmrPemakaianSendiri/BPELAmrPemakaianSendiri"
+               xmlns:ora="http://schemas.oracle.com/xpath/extension"
+               xmlns:bpel="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+         xmlns:ns1="http://xmlns.oracle.com/pcbpel/adapter/db/IP-AMR-SOA/PNAmrPemakaianSendiri/dbPNAmrPemakaianSendiriInput"
+         xmlns:ns2="http://www.ibm.com/maximo/wsdl/IPPN_REALI_PMKN_SNDR"
+         xmlns:ns3="http://xmlns.oracle.com/pcbpel/adapter/db/IP-AMR-SOA/PNAmrPemakaianSendiri/dbUpdatePNAmrPemakaianSendiri"
+         xmlns:ns4="http://oracle.com/sca/soapservice/IP-MW-SOA/EBSSendMailNotification/EBSSendMailNotification"
+         xmlns:ns5="http://oracle.com/sca/soapservice/IP-MW-SOA/EBSLogFileUtility/EBSLogFileUtility"
+         xmlns:bpelx="http://schemas.oracle.com/bpel/extension" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+         xmlns:xp20="http://www.oracle.com/XSL/Transform/java/oracle.tip.pc.services.functions.Xpath20"
+         xmlns:bpws="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+         xmlns:oraext="http://www.oracle.com/XSL/Transform/java/oracle.tip.pc.services.functions.ExtFunc"
+         xmlns:dvm="http://www.oracle.com/XSL/Transform/java/oracle.tip.dvm.LookupValue"
+         xmlns:hwf="http://xmlns.oracle.com/bpel/workflow/xpath"
+         xmlns:ids="http://xmlns.oracle.com/bpel/services/IdentityService/xpath"
+         xmlns:bpm="http://xmlns.oracle.com/bpmn20/extensions" xmlns:ess="http://xmlns.oracle.com/scheduler"
+         xmlns:xdk="http://schemas.oracle.com/bpel/extension/xpath/function/xdk"
+         xmlns:xref="http://www.oracle.com/XSL/Transform/java/oracle.tip.xref.xpath.XRefXPathFunctions"
+         xmlns:ldap="http://schemas.oracle.com/xpath/extension/ldap"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:ns6="http://xmlns.oracle.com/pcbpel/adapter/db/top/dbPNAmrPemakaianSendiriInput"
+         xmlns:ui="http://xmlns.oracle.com/soa/designer" xmlns:ns7="http://www.example.org"
+         xmlns:ns8="http://soa.indonesiapower.co.id/schema/AmrPemakaianSendiri"
+         xmlns:ns9="http://ebs.indonesiapower.co.id/SendMailNotification"
+         xmlns:ns10="http://ebs.indonesiapower.co.id/shema/log" xmlns:ns11="http://www.ibm.com/maximo"
+         xmlns:ns12="http://ebs.indonesiapower.co.id/schema/fault">
+
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+     ORCHESTRATION LOGIC                                               
+     Set of activities coordinating the flow of messages across the    
+     services integrated within this business process                  
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <import namespace="http://xmlns.oracle.com/pcbpel/adapter/db/IP-AMR-SOA/PNAmrPemakaianSendiri/dbPNAmrPemakaianSendiriInput"
+          location="../WSDLs/dbPNAmrPemakaianSendiriInput.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"
+          ui:processWSDL="true"/>
+  <import namespace="http://soa.indonesiapower.co.id/schema/AmrPemakaianSendiri"
+          location="../Schemas/AmrPemakaianSendiri.xsd" importType="http://www.w3.org/2001/XMLSchema"/>
+  <import namespace="http://ebs.indonesiapower.co.id/schema/fault" location="../Schemas/fault.xsd"
+          importType="http://www.w3.org/2001/XMLSchema"/>
+  <!-- <import location="../WSDLs/BPELAmrPemakaianSendiri.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"
+          ui:processWSDL="true"/>
+          -->
+  <partnerLinks>
+    <partnerLink name="dbPNAmrPemakaianSendiriInput" partnerLinkType="ns1:dbPNAmrPemakaianSendiriInput_plt"
+                 myRole="dbPNAmrPemakaianSendiriInput_role"/>
+    <partnerLink name="IPPN_REALI_PMKN_SNDR" partnerLinkType="ns2:IPPN_REALI_PMKN_SNDR"
+                 partnerRole="IPPN_REALI_PMKN_SNDRPortType"/>
+    <partnerLink name="dbUpdatePNAmrPemakaianSendiri" partnerLinkType="ns3:dbUpdatePNAmrPemakaianSendiri_plt"
+                 partnerRole="dbUpdatePNAmrPemakaianSendiri_role"/>
+    <partnerLink name="EBSLogFileUtility" partnerLinkType="ns5:EBSLogFileUtility" partnerRole="writeLog_ptt"/>
+    <partnerLink name="EBSSendMailNotification" partnerLinkType="ns4:EBSSendMailNotification"
+                 partnerRole="execute_ptt"/>
+  </partnerLinks>
+  <variables>
+    <variable name="ReceiveInput_receive_InputVariable" messageType="ns1:AmrPsCollection_msg"/>
+    <variable name="ServiceName" type="xsd:string"/>
+    <variable name="StartDateTime" type="xsd:string"/>
+    <!--<variable name="InvokeIPPN_REALI_PMKN_SNDR_QueryIPPN_REALI_PMKN_SNDR_InputVariable"
+              messageType="ns2:QueryIPPN_REALI_PMKN_SNDRRequest"/>
+    <variable name="InvokeIPPN_REALI_PMKN_SNDR_QueryIPPN_REALI_PMKN_SNDR_OutputVariable"
+              messageType="ns2:QueryIPPN_REALI_PMKN_SNDRResponse"/>
+              -->
+    <variable name="InvokeErrordbUpdate_update_InputVariable" messageType="ns3:AmrPsCollection_msg"/>
+    <variable name="Response" element="ns8:ResponseAmrPemakaianSendiri"/>
+    <!--<variable name="Invoke1_execute_InputVariable" messageType="ns4:requestMessage"/>
+    <variable name="Invoke1_execute_OutputVariable" messageType="ns4:replyMessage"/>
+    -->
+    <variable name="InvokeErrorEBSLogFileUtility_writeLog_InputVariable" messageType="ns5:requestMessage"/>
+    <variable name="InvokeErrorEBSLogFileUtility_writeLog_OutputVariable" messageType="ns5:replyMessage"/>
+    <variable name="InvokeSuccessdbUpdatePNAmrPemakaianSendiri_update_InputVariable"
+              messageType="ns3:AmrPsCollection_msg"/>
+    <variable name="InvokeSuccessEBSLogFileUtility_writeLog_InputVariable" messageType="ns5:requestMessage"/>
+    <variable name="InvokeSuccessEBSLogFileUtility_writeLog_OutputVariable" messageType="ns5:replyMessage"/>
+    <variable name="InvokeIPPN_REALI_PMKN_SNDR_SyncIPPN_REALI_PMKN_SNDR_InputVariable"
+              messageType="ns2:SyncIPPN_REALI_PMKN_SNDRRequest"/>
+    <variable name="InvokeIPPN_REALI_PMKN_SNDR_SyncIPPN_REALI_PMKN_SNDR_OutputVariable"
+              messageType="ns2:SyncIPPN_REALI_PMKN_SNDRResponse"/>
+    <variable name="fault" element="ns12:fault"/>
+    <variable name="InvokeErrorEBSSendMailNotification_execute_InputVariable" messageType="ns4:requestMessage"/>
+    <variable name="InvokeErrorEBSSendMailNotification_execute_OutputVariable" messageType="ns4:replyMessage"/>
+  </variables>
+  <sequence name="main">
+    <receive name="ReceiveInput" partnerLink="dbPNAmrPemakaianSendiriInput"
+             portType="ns1:dbPNAmrPemakaianSendiriInput_ptt" operation="receive"
+             variable="ReceiveInput_receive_InputVariable" createInstance="yes"/>
+    <sequence name="InitalParameter">
+      <assign name="AssignServiceName">
+        <copy>
+          <from>'PNAmrPemakianSendiri'</from>
+          <to>$ServiceName</to>
+        </copy>
+      </assign>
+      <assign name="AssignDateTime">
+        <copy>
+          <from>xp20:current-dateTime()</from>
+          <to>$StartDateTime</to>
+        </copy>
+      </assign>
+    </sequence>
+    <scope name="IPPN_REALI_PMKN_SNDR">
+      <faultHandlers>
+        <catchAll>
+          <sequence name="PNAmrPemakaianSendiri_ErrorHandling">
+            <assign name="Assign_Fault">
+              <copy>
+                <from>substring-before(substring-after(ora:getFaultAsString(), "&amp;lt;code&amp;gt;"), "&amp;lt;/code&amp;gt;")</from>
+                <to>$fault/ns12:code</to>
+              </copy>
+              <copy>
+                <from>substring-before(substring-after(ora:getFaultAsString(),'&amp;lt;summary&amp;gt;'),'&amp;lt;/summary&amp;gt;')</from>
+                <to>$fault/ns12:summary</to>
+              </copy>
+              <copy>
+                <from>substring-before(substring-after(ora:getFaultAsString(),'&amp;lt;detail&amp;gt;'),'&amp;lt;/detail&amp;gt;')</from>
+                <to>$fault/ns12:details</to>
+              </copy>
+            </assign>
+            <assign name="Assign_Response">
+              <copy>
+                <from>$fault/ns12:code</from>
+                <to>$Response/ns8:Response/ns8:ErrorCode</to>
+              </copy>
+              <copy>
+                <from>$fault/ns12:summary</from>
+                <to>$Response/ns8:Response/ns8:ErrorMessage</to>
+              </copy>
+            </assign>
+            <sequence name="UpdateDBPNAmr">
+              <assign name="XQTransformErrorUpdateDB">
+                <bpelx:annotation>
+                  <bpelx:pattern patternName="bpelx:xquery"></bpelx:pattern>
+                </bpelx:annotation>
+                <copy>
+                  <from>ora:processXQuery10('../Transformations/T_UpdateErrorDBPNAmrPemakaianSendiri.xqy', 'ReceiveInput_receive_InputVariable.AmrPsCollection', $ReceiveInput_receive_InputVariable.AmrPsCollection, 'Response', $Response)</from>
+                  <to variable="InvokeErrordbUpdate_update_InputVariable" part="AmrPsCollection"/>
+                </copy>
+              </assign>
+              <invoke name="InvokeErrordbUpdate" bpelx:invokeAsDetail="no" partnerLink="dbUpdatePNAmrPemakaianSendiri"
+                      portType="ns3:dbUpdatePNAmrPemakaianSendiri_ptt" operation="update"
+                      inputVariable="InvokeErrordbUpdate_update_InputVariable"/>
+            </sequence>
+            <sequence name="SendMailNotification">
+              <assign name="AssignInputMail">
+                <copy>
+                  <from>concat('Nama Service :',"&amp;#13;",concat(ora:getFlowId(),' - ',normalize-space($ServiceName)),"&amp;#13;","&amp;#13;",'Input Request :',"&amp;#13;",normalize-space(ora:toCDATA($ReceiveInput_receive_InputVariable.AmrPsCollection)), "&amp;#13;", "&amp;#13;",'Output Response :',"&amp;#13;",normalize-space(ora:toCDATA($Response)), "&amp;#13;", "&amp;#13;",'Fault :',"&amp;#13;",normalize-space(ora:toCDATA(ora:getFaultAsXML())))</from>
+                  <to>$InvokeErrorEBSSendMailNotification_execute_InputVariable.payload/ns9:InputString</to>
+                </copy>
+              </assign>
+              <invoke name="InvokeErrorEBSSendMailNotification"
+                      partnerLink="EBSSendMailNotification" portType="ns4:execute_ptt" operation="execute"
+                      inputVariable="InvokeErrorEBSSendMailNotification_execute_InputVariable"
+                      outputVariable="InvokeErrorEBSSendMailNotification_execute_OutputVariable"
+                      bpelx:invokeAsDetail="no"/>
+            </sequence>
+            <sequence name="WriteLogFile">
+              <assign name="AssignErrorLogFileUtil">
+                <copy>
+                  <from>$ServiceName</from>
+                  <to>$InvokeErrorEBSLogFileUtility_writeLog_InputVariable.input_msg/ns10:serviceName</to>
+                </copy>
+                <copy>
+                  <from>concat('IP-MW-SOA',' || ',ora:getFlowId(),' || ','Start Process ',$ServiceName,'  --&gt; Request Payload = ',normalize-space(ora:toCDATA($ReceiveInput_receive_InputVariable.AmrPsCollection)),' || ', 'Request ',$ServiceName,': ','Payload = ',normalize-space(ora:toCDATA($InvokeIPPN_REALI_PMKN_SNDR_SyncIPPN_REALI_PMKN_SNDR_InputVariable.parameters)),' || ','Response ',$ServiceName,': ','Payload = ',normalize-space(ora:toCDATA(ora:getFaultAsXML())),' || ','End Process ',$ServiceName,'. Total time executed ',round((xp20:seconds-from-dateTime((xp20:current-dateTime()))-xp20:seconds-from-dateTime($StartDateTime))*1000),' millis.')</from>
+                  <to>$InvokeErrorEBSLogFileUtility_writeLog_InputVariable.input_msg/ns10:message</to>
+                </copy>
+                <copy>
+                  <from>'ERROR'</from>
+                  <to>$InvokeErrorEBSLogFileUtility_writeLog_InputVariable.input_msg/ns10:level</to>
+                </copy>
+              </assign>
+              <invoke name="InvokeErrorEBSLogFileUtility" partnerLink="EBSLogFileUtility"
+                      portType="ns5:writeLog_ptt" operation="writeLog"
+                      inputVariable="InvokeErrorEBSLogFileUtility_writeLog_InputVariable"
+                      outputVariable="InvokeErrorEBSLogFileUtility_writeLog_OutputVariable" bpelx:invokeAsDetail="no"/>
+            </sequence>
+            <exit name="Exit1"/>
+          </sequence>
+        </catchAll>
+      </faultHandlers>
+      <sequence name="IPPN_REALI_PMKN_SNDR">
+        <assign name="TransformationInput">
+          <bpelx:annotation>
+            <bpelx:pattern patternName="bpelx:transformation"></bpelx:pattern>
+          </bpelx:annotation>
+          <copy>
+            <from>ora:doXSLTransformForDoc("../Transformations/Transformation_1.xsl", $ReceiveInput_receive_InputVariable.AmrPsCollection)</from>
+            <to variable="InvokeIPPN_REALI_PMKN_SNDR_SyncIPPN_REALI_PMKN_SNDR_InputVariable" part="parameters"/>
+          </copy>
+        </assign>
+        <invoke name="InvokeIPPN_REALI_PMKN_SNDR" partnerLink="IPPN_REALI_PMKN_SNDR"
+                portType="ns2:IPPN_REALI_PMKN_SNDRPortType" operation="SyncIPPN_REALI_PMKN_SNDR"
+                inputVariable="InvokeIPPN_REALI_PMKN_SNDR_SyncIPPN_REALI_PMKN_SNDR_InputVariable"
+                outputVariable="InvokeIPPN_REALI_PMKN_SNDR_SyncIPPN_REALI_PMKN_SNDR_OutputVariable"
+                bpelx:invokeAsDetail="no"/>
+      </sequence>
+    </scope>
+    <sequence name="Report_Success">
+      <assign name="AssignResponseSuccess">
+        <copy>
+          <from>'00000'</from>
+          <to>$Response/ns8:Response/ns8:ErrorCode</to>
+        </copy>
+        <copy>
+          <from>'SUCCESS'</from>
+          <to>$Response/ns8:Response/ns8:ErrorMessage</to>
+        </copy>
+      </assign>
+      <sequence name="UpdateSuccessDB">
+        <assign name="XQTransformUpdateSuccessDB">
+          <bpelx:annotation>
+            <bpelx:pattern patternName="bpelx:xquery"></bpelx:pattern>
+          </bpelx:annotation>
+          <copy>
+            <from>ora:processXQuery10('../Transformations/T_UpdateSuccessDBPNAmrPemakaianSendiri.xqy', 'ReceiveInput_receive_InputVariable.AmrPsCollection', $ReceiveInput_receive_InputVariable.AmrPsCollection, 'Response', $Response)</from>
+            <to variable="InvokeSuccessdbUpdatePNAmrPemakaianSendiri_update_InputVariable" part="AmrPsCollection"/>
+          </copy>
+        </assign>
+        <invoke name="InvokeSuccessdbUpdatePNAmrPemakaianSendiri" bpelx:invokeAsDetail="no"
+                partnerLink="dbUpdatePNAmrPemakaianSendiri" portType="ns3:dbUpdatePNAmrPemakaianSendiri_ptt"
+                operation="update" inputVariable="InvokeSuccessdbUpdatePNAmrPemakaianSendiri_update_InputVariable"/>
+      </sequence>
+      <sequence name="WriteLogSuccess">
+        <assign name="AssignLogFileSuccess">
+          <copy>
+            <from>$ServiceName</from>
+            <to>$InvokeSuccessEBSLogFileUtility_writeLog_InputVariable.input_msg/ns10:serviceName</to>
+          </copy>
+          <copy>
+            <from>concat('IP-MW-SOA',' || ',ora:getFlowId(),' || ','Start Process ',$ServiceName,' --&gt; Request Payload = ',normalize-space(ora:toCDATA($ReceiveInput_receive_InputVariable.AmrPsCollection)),' || ', 'Request ',$ServiceName,': ','Payload = ',normalize-space(ora:toCDATA($InvokeIPPN_REALI_PMKN_SNDR_SyncIPPN_REALI_PMKN_SNDR_InputVariable.parameters)),' || ','Response ',$ServiceName,': ','Payload = ',normalize-space(ora:toCDATA($InvokeIPPN_REALI_PMKN_SNDR_SyncIPPN_REALI_PMKN_SNDR_OutputVariable.parameters)),' || ','End Process ',$ServiceName,'. Total time executed ',round((xp20:seconds-from-dateTime((xp20:current-dateTime()))-xp20:seconds-from-dateTime($StartDateTime))*1000),' millis.')</from>
+            <to>$InvokeSuccessEBSLogFileUtility_writeLog_InputVariable.input_msg/ns10:message</to>
+          </copy>
+          <copy>
+            <from>'INFO'</from>
+            <to>$InvokeSuccessEBSLogFileUtility_writeLog_InputVariable.input_msg/ns10:level</to>
+          </copy>
+        </assign>
+        <invoke name="InvokeSuccessEBSLogFileUtility" partnerLink="EBSLogFileUtility"
+                portType="ns5:writeLog_ptt" operation="writeLog"
+                inputVariable="InvokeSuccessEBSLogFileUtility_writeLog_InputVariable"
+                outputVariable="InvokeSuccessEBSLogFileUtility_writeLog_OutputVariable" bpelx:invokeAsDetail="no"/>
+      </sequence>
+    </sequence>
+  </sequence>
+</process>

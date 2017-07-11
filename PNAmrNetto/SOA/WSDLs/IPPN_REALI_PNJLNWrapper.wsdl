@@ -1,0 +1,15 @@
+<?xml version= '1.0' encoding= 'UTF-8' ?>
+<wsdl:definitions
+     name="IPPN_REALI_PNJLN"
+     targetNamespace="http://www.ibm.com/maximo/wsdl/IPPN_REALI_PNJLN"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+     xmlns:bpws="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+     xmlns:plnk="http://docs.oasis-open.org/wsbpel/2.0/plnktype"
+     xmlns:mxws="http://www.ibm.com/maximo/wsdl/IPPN_REALI_PNJLN"
+     xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    >
+    <plnk:partnerLinkType name="IPPN_REALI_PNJLN">
+        <plnk:role name="IPPN_REALI_PNJLNPortType" portType="mxws:IPPN_REALI_PNJLNPortType"/>
+    </plnk:partnerLinkType>
+    <wsdl:import namespace="http://www.ibm.com/maximo/wsdl/IPPN_REALI_PNJLN" location="http://192.168.100.196/meaweb/wsdl/IPPN_REALI_PNJLN.wsdl"/>
+</wsdl:definitions>

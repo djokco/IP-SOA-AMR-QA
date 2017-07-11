@@ -1,0 +1,22 @@
+<adapter-config name="dbPNAmrBrutoInput" adapter="db" wsdlLocation="../WSDLs/dbPNAmrBrutoInput.wsdl" xmlns="http://platform.integration.oracle/blocks/adapter/fw/metadata">
+  
+  <connection-factory UIConnectionName="amr" location="eis/DB/amr"/>
+  <endpoint-activation portType="dbPNAmrBrutoInput_ptt" operation="receive">
+    <activation-spec className="oracle.tip.adapter.db.DBActivationSpec">
+      <property name="DescriptorName" value="dbPNAmrBrutoInput.AmrBruto"/>
+      <property name="QueryName" value="dbPNAmrBrutoInputSelect"/>
+      <property name="MappingsMetaDataURL" value="dbPNAmrBrutoInput-or-mappings.xml"/>
+      <property name="PollingStrategy" value="LogicalDeletePollingStrategy"/>
+      <property name="MarkReadColumn" value="SOA_READ"/>
+      <property name="MarkReadValue" value="C"/>
+      <property name="MarkUnreadValue" value="P"/>
+      <property name="PollingInterval" value="5"/>
+      <property name="MaxRaiseSize" value="1"/>
+      <property name="MaxTransactionSize" value="1"/>
+      <property name="SequencingColumn" value="ID"/>
+      <property name="NumberOfThreads" value="1"/>
+      <property name="ReturnSingleResultSet" value="false"/>
+    </activation-spec>
+  </endpoint-activation>
+
+</adapter-config>

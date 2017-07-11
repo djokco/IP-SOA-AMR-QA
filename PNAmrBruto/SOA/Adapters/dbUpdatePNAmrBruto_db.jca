@@ -1,0 +1,14 @@
+<adapter-config name="dbUpdatePNAmrBruto" adapter="db" wsdlLocation="../WSDLs/dbUpdatePNAmrBruto.wsdl" xmlns="http://platform.integration.oracle/blocks/adapter/fw/metadata">
+  
+  <connection-factory UIConnectionName="amr" location="eis/DB/amr"/>
+  <endpoint-interaction portType="dbUpdatePNAmrBruto_ptt" operation="update">
+    <interaction-spec className="oracle.tip.adapter.db.DBWriteInteractionSpec">
+      <property name="DescriptorName" value="dbUpdatePNAmrBruto.AmrBruto"/>
+      <property name="DmlType" value="update"/>
+      <property name="MappingsMetaDataURL" value="dbUpdatePNAmrBruto-or-mappings.xml"/>
+      <property name="GetActiveUnitOfWork" value="false"/>
+      <property name="DetectOmissions" value="true"/>
+    </interaction-spec>
+  </endpoint-interaction>
+
+</adapter-config>

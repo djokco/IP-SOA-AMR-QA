@@ -1,0 +1,22 @@
+<adapter-config name="dbPNAmrPemakaianSendiriInput" adapter="db" wsdlLocation="../WSDLs/dbPNAmrPemakaianSendiriInput.wsdl" xmlns="http://platform.integration.oracle/blocks/adapter/fw/metadata">
+  
+  <connection-factory UIConnectionName="amr" location="eis/DB/amr"/>
+  <endpoint-activation portType="dbPNAmrPemakaianSendiriInput_ptt" operation="receive">
+    <activation-spec className="oracle.tip.adapter.db.DBActivationSpec">
+      <property name="DescriptorName" value="dbPNAmrPemakaianSendiriInput.AmrPs"/>
+      <property name="QueryName" value="dbPNAmrPemakaianSendiriInputSelect"/>
+      <property name="MappingsMetaDataURL" value="dbPNAmrPemakaianSendiriInput-or-mappings.xml"/>
+      <property name="PollingStrategy" value="LogicalDeletePollingStrategy"/>
+      <property name="MarkReadColumn" value="SOA_READ"/>
+      <property name="MarkReadValue" value="C"/>
+      <property name="MarkUnreadValue" value="P"/>
+      <property name="PollingInterval" value="5"/>
+      <property name="MaxRaiseSize" value="1"/>
+      <property name="MaxTransactionSize" value="1"/>
+      <property name="SequencingColumn" value="ID"/>
+      <property name="NumberOfThreads" value="1"/>
+      <property name="ReturnSingleResultSet" value="false"/>
+    </activation-spec>
+  </endpoint-activation>
+
+</adapter-config>

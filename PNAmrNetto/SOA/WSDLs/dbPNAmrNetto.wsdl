@@ -1,0 +1,39 @@
+<wsdl:definitions
+     name="dbPNAmrNetto"
+     targetNamespace="http://xmlns.oracle.com/pcbpel/adapter/db/IP-AMR-SOA/PNAmrNetto/dbPNAmrNetto"
+     xmlns:tns="http://xmlns.oracle.com/pcbpel/adapter/db/IP-AMR-SOA/PNAmrNetto/dbPNAmrNetto"
+     xmlns:jca="http://xmlns.oracle.com/pcbpel/wsdl/jca/"
+     xmlns:plt="http://schemas.xmlsoap.org/ws/2003/05/partner-link/"
+     xmlns:pc="http://xmlns.oracle.com/pcbpel/"
+     xmlns:top="http://xmlns.oracle.com/pcbpel/adapter/db/top/dbPNAmrNetto"
+     xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    >
+  <plt:partnerLinkType name="dbPNAmrNetto_plt" >
+    <plt:role name="dbPNAmrNetto_role" >
+      <plt:portType name="tns:dbPNAmrNetto_ptt" />
+    </plt:role>
+  </plt:partnerLinkType>
+  <plt:partnerLinkType name="dbPNAmrNetto_plt" >
+    <plt:role name="dbPNAmrNetto_role" >
+      <plt:portType name="tns:dbPNAmrNetto_ptt" />
+    </plt:role>
+  </plt:partnerLinkType>
+  <plt:partnerLinkType name="dbPNAmrNetto_plt" >
+    <plt:role name="dbPNAmrNetto_role" >
+      <plt:portType name="tns:dbPNAmrNetto_ptt" />
+    </plt:role>
+  </plt:partnerLinkType>
+    <wsdl:types>
+      <schema xmlns="http://www.w3.org/2001/XMLSchema" >
+        <import namespace="http://xmlns.oracle.com/pcbpel/adapter/db/top/dbPNAmrNetto" schemaLocation="../Schemas/dbPNAmrNetto_table.xsd" />
+      </schema>
+    </wsdl:types>
+    <wsdl:message name="AmrNettoCollection_msg">
+        <wsdl:part name="AmrNettoCollection" element="top:AmrNettoCollection"/>
+    </wsdl:message>
+    <wsdl:portType name="dbPNAmrNetto_ptt">
+        <wsdl:operation name="receive">
+            <wsdl:input message="tns:AmrNettoCollection_msg"/>
+        </wsdl:operation>
+    </wsdl:portType>
+</wsdl:definitions>

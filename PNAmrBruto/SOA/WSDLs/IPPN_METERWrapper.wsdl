@@ -1,0 +1,15 @@
+<?xml version= '1.0' encoding= 'UTF-8' ?>
+<wsdl:definitions
+     name="IPPN_METER"
+     targetNamespace="http://www.ibm.com/maximo/wsdl/IPPN_METER"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+     xmlns:bpws="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+     xmlns:plnk="http://docs.oasis-open.org/wsbpel/2.0/plnktype"
+     xmlns:mxws="http://www.ibm.com/maximo/wsdl/IPPN_METER"
+     xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    >
+    <plnk:partnerLinkType name="QueryIPPN_METER">
+        <plnk:role name="IPPN_METERPortType" portType="mxws:IPPN_METERPortType"/>
+    </plnk:partnerLinkType>
+    <wsdl:import namespace="http://www.ibm.com/maximo/wsdl/IPPN_METER" location="http://192.168.100.196/meaweb/wsdl/IPPN_METER.wsdl"/>
+</wsdl:definitions>

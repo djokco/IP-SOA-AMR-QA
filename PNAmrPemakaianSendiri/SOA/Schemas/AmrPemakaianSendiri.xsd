@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="windows-1252" ?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns="http://soa.indonesiapower.co.id/schema/AmrPemakaianSendiri"
+            targetNamespace="http://soa.indonesiapower.co.id/schema/AmrPemakaianSendiri" elementFormDefault="qualified">
+  <xsd:element name="ResponseAmrPemakaianSendiri">
+    <xsd:annotation>
+      <xsd:documentation>A sample element</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Response" type="Response"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:complexType name="Response">
+    <xsd:sequence>
+      <xsd:element name="ErrorCode" type="xsd:string"/>
+      <xsd:element name="ErrorMessage" type="xsd:string"/>
+    </xsd:sequence>
+  </xsd:complexType>
+</xsd:schema>

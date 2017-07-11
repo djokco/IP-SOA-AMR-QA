@@ -1,0 +1,28 @@
+<wsdl:definitions
+     name="dbUpdatePNAmrPemakaianSendiri"
+     targetNamespace="http://xmlns.oracle.com/pcbpel/adapter/db/IP-AMR-SOA/PNAmrPemakaianSendiri/dbUpdatePNAmrPemakaianSendiri"
+     xmlns:tns="http://xmlns.oracle.com/pcbpel/adapter/db/IP-AMR-SOA/PNAmrPemakaianSendiri/dbUpdatePNAmrPemakaianSendiri"
+     xmlns:jca="http://xmlns.oracle.com/pcbpel/wsdl/jca/"
+     xmlns:plt="http://schemas.xmlsoap.org/ws/2003/05/partner-link/"
+     xmlns:top="http://xmlns.oracle.com/pcbpel/adapter/db/top/dbUpdatePNAmrPemakaianSendiri"
+     xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    >
+  <plt:partnerLinkType name="dbUpdatePNAmrPemakaianSendiri_plt" >
+    <plt:role name="dbUpdatePNAmrPemakaianSendiri_role" >
+      <plt:portType name="tns:dbUpdatePNAmrPemakaianSendiri_ptt" />
+    </plt:role>
+  </plt:partnerLinkType>
+    <wsdl:types>
+      <schema xmlns="http://www.w3.org/2001/XMLSchema" >
+        <import namespace="http://xmlns.oracle.com/pcbpel/adapter/db/top/dbUpdatePNAmrPemakaianSendiri" schemaLocation="../Schemas/dbUpdatePNAmrPemakaianSendiri_table.xsd" />
+      </schema>
+    </wsdl:types>
+    <wsdl:message name="AmrPsCollection_msg">
+        <wsdl:part name="AmrPsCollection" element="top:AmrPsCollection"/>
+    </wsdl:message>
+    <wsdl:portType name="dbUpdatePNAmrPemakaianSendiri_ptt">
+        <wsdl:operation name="update">
+            <wsdl:input message="tns:AmrPsCollection_msg"/>
+        </wsdl:operation>
+    </wsdl:portType>
+</wsdl:definitions>

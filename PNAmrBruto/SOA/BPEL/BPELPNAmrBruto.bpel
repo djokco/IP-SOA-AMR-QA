@@ -1,0 +1,350 @@
+<?xml version = "1.0" encoding = "UTF-8" ?>
+<!--
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  Oracle JDeveloper BPEL Designer 
+  
+  Created: Mon May 22 13:38:52 ICT 2017
+  Author:  AlbertusIn
+  Type: BPEL 2.0 Process
+  Purpose: Empty BPEL Process
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+-->
+<process name="BPELPNAmrBruto"
+               targetNamespace="http://xmlns.oracle.com/IP_AMR_SOA_QA/PNAmrBruto/BPELPNAmrBruto"
+               xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+               xmlns:client="http://xmlns.oracle.com/IP_AMR_SOA_QA/PNAmrBruto/BPELPNAmrBruto"
+               xmlns:ora="http://schemas.oracle.com/xpath/extension"
+               xmlns:bpel="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+         xmlns:ns1="http://oracle.com/sca/soapservice/IP-MW-SOA/EBSSendMailNotification/EBSSendMailNotification"
+         xmlns:ns2="http://oracle.com/sca/soapservice/IP-MW-SOA/EBSLogFileUtility/EBSLogFileUtility"
+         xmlns:ns3="http://xmlns.oracle.com/pcbpel/adapter/db/IP-AMR-SOA-QA/PNAmrBruto/dbUpdatePNAmrBruto"
+         xmlns:ns4="http://www.ibm.com/maximo/wsdl/IPPN_REALI_PRDKS_BRU"
+         xmlns:ns5="http://xmlns.oracle.com/pcbpel/adapter/db/IP-AMR-SOA-QA/PNAmrBruto/dbPNAmrBrutoInput"
+         xmlns:bpelx="http://schemas.oracle.com/bpel/extension" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+         xmlns:xp20="http://www.oracle.com/XSL/Transform/java/oracle.tip.pc.services.functions.Xpath20"
+         xmlns:bpws="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+         xmlns:oraext="http://www.oracle.com/XSL/Transform/java/oracle.tip.pc.services.functions.ExtFunc"
+         xmlns:dvm="http://www.oracle.com/XSL/Transform/java/oracle.tip.dvm.LookupValue"
+         xmlns:hwf="http://xmlns.oracle.com/bpel/workflow/xpath"
+         xmlns:ids="http://xmlns.oracle.com/bpel/services/IdentityService/xpath"
+         xmlns:bpm="http://xmlns.oracle.com/bpmn20/extensions" xmlns:ess="http://xmlns.oracle.com/scheduler"
+         xmlns:xdk="http://schemas.oracle.com/bpel/extension/xpath/function/xdk"
+         xmlns:xref="http://www.oracle.com/XSL/Transform/java/oracle.tip.xref.xpath.XRefXPathFunctions"
+         xmlns:ldap="http://schemas.oracle.com/xpath/extension/ldap" xmlns:ui="http://xmlns.oracle.com/soa/designer"
+         xmlns:ns6="http://ebs.indonesiapower.co.id/schema/fault"
+         xmlns:ns7="http://soa.indonesiapower.co.id/schema/amrbruto"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:ns8="http://xmlns.oracle.com/pcbpel/adapter/db/top/dbPNAmrBrutoInput"
+         xmlns:ns9="http://ebs.indonesiapower.co.id/shema/log" xmlns:ns10="http://www.ibm.com/maximo"
+         xmlns:ns11="http://ebs.indonesiapower.co.id/SendMailNotification"
+         xmlns:ns12="http://www.ibm.com/maximo/wsdl/IPPN_METER">
+
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+     ORCHESTRATION LOGIC                                               
+     Set of activities coordinating the flow of messages across the    
+     services integrated within this business process                  
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <!--<import namespace="http://oracle.com/sca/soapservice/IP-MW-SOA/EBSSendMailNotification/EBSSendMailNotification"
+          location="../WSDLs/EBSSendMailNotificationWrapper.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"
+          ui:processWSDL="true"/>-->
+  <import namespace="http://oracle.com/sca/soapservice/IP-MW-SOA/EBSSendMailNotification/EBSSendMailNotification"
+          location="../WSDLs/EBSSendMailNotificationWrapper.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"
+          ui:processWSDL="true"/>
+  <import namespace="http://soa.indonesiapower.co.id/schema/amrbruto" location="../Schemas/AmrBruto.xsd"
+          importType="http://www.w3.org/2001/XMLSchema"/>
+  <import namespace="http://ebs.indonesiapower.co.id/schema/fault" location="../Schemas/fault.xsd"
+          importType="http://www.w3.org/2001/XMLSchema"/>
+  <!--<import location="../WSDLs/BPELPNAmrBruto.wsdl" importType="http://schemas.xmlsoap.org/wsdl/" ui:processWSDL="true"/>-->
+  <partnerLinks>
+    <partnerLink name="EBSLogFileUtility" partnerLinkType="ns2:EBSLogFileUtility" partnerRole="writeLog_ptt"/>
+    <partnerLink name="dbUpdatePNAmrBruto" partnerLinkType="ns3:dbUpdatePNAmrBruto_plt"
+                 partnerRole="dbUpdatePNAmrBruto_role"/>
+    <partnerLink name="IPPN_REALI_PRDKS_BRU" partnerLinkType="ns4:IPPN_REALI_PRDKS_BRU"
+                 partnerRole="IPPN_REALI_PRDKS_BRUPortType"/>
+    <partnerLink name="dbPNAmrBrutoInput" partnerLinkType="ns5:dbPNAmrBrutoInput_plt" myRole="dbPNAmrBrutoInput_role"/>
+    <partnerLink name="EBSSendMailNotification" partnerLinkType="ns1:EBSSendMailNotification"
+                 partnerRole="execute_ptt"/>
+    <partnerLink name="QueryIPPN_METER" partnerLinkType="ns12:QueryIPPN_METER" partnerRole="IPPN_METERPortType"/>
+  </partnerLinks>
+  <variables>
+    <variable name="ReceiveInput_receive_InputVariable" messageType="ns5:AmrBrutoCollection_msg"/>
+    <variable name="ServiceName" type="xsd:string"/>
+    <variable name="StartDateTime" type="xsd:string"/>
+    <variable name="InvokeIPPN_REALI_PRDKS_BRU_SyncIPPN_REALI_PRDKS_BRU_InputVariable"
+              messageType="ns4:SyncIPPN_REALI_PRDKS_BRURequest"/>
+    <variable name="InvokeIPPN_REALI_PRDKS_BRU_SyncIPPN_REALI_PRDKS_BRU_OutputVariable"
+              messageType="ns4:SyncIPPN_REALI_PRDKS_BRUResponse"/>
+    <variable name="Response" element="ns7:ResponseAmrBruto"/>
+    <variable name="fault" element="ns6:fault"/>
+    <variable name="InvokeErrordbUpdatePNAmrBruto_update_InputVariable" messageType="ns3:AmrBrutoCollection_msg"/>
+    <variable name="InvokeErrorEBSSendMailNotification_execute_InputVariable" messageType="ns1:requestMessage"/>
+    <variable name="InvokeErrorEBSSendMailNotification_execute_OutputVariable" messageType="ns1:replyMessage"/>
+    <!--<variable name="InvokeErrorEBSSendMailNotification_execute_OutputVariable_1" messageType="ns1:replyMessage"/>-->
+    <variable name="InvokeErrorEBSLogFileUtility_writeLog_InputVariable" messageType="ns2:requestMessage"/>
+    <variable name="InvokeErrorEBSLogFileUtility_writeLog_OutputVariable" messageType="ns2:replyMessage"/>
+    <variable name="InvokeSuccessdbUpdatePNAmrBruto_update_InputVariable" messageType="ns3:AmrBrutoCollection_msg"/>
+    <variable name="InvokeSuccessEBSLogFileUtility_writeLog_InputVariable" messageType="ns2:requestMessage"/>
+    <variable name="InvokeSuccessEBSLogFileUtility_writeLog_OutputVariable" messageType="ns2:replyMessage"/>
+    <variable name="QueryIPPN_METER_QueryIPPN_METER_InputVariable" messageType="ns12:QueryIPPN_METERRequest"/>
+    <variable name="QueryIPPN_METER_QueryIPPN_METER_OutputVariable" messageType="ns12:QueryIPPN_METERResponse"/>
+    <variable name="InvokeMeterNotFound_dbUpdatePNAmrBruto_update_InputVariable"
+              messageType="ns3:AmrBrutoCollection_msg"/>
+    <variable name="InvokeLogFileMeterNotFound_EBSLogFileUtility_writeLog_InputVariable"
+              messageType="ns2:requestMessage"/>
+    <variable name="InvokeLogFileMeterNotFound_EBSLogFileUtility_writeLog_OutputVariable"
+              messageType="ns2:replyMessage"/>
+    <variable name="InvokeMeterNotFound_EBSSendMailNotification_execute_InputVariable"
+              messageType="ns1:requestMessage"/>
+    <variable name="InvokeMeterNotFound_EBSSendMailNotification_execute_OutputVariable" messageType="ns1:replyMessage"/>
+  </variables>
+  <sequence name="main">
+    <receive name="ReceiveInput" partnerLink="dbPNAmrBrutoInput" portType="ns5:dbPNAmrBrutoInput_ptt"
+             operation="receive" variable="ReceiveInput_receive_InputVariable" createInstance="yes"/>
+    <sequence name="InitialParameter">
+      <assign name="AssignServiceName">
+        <copy>
+          <from>'PNAmrBruto'</from>
+          <to>$ServiceName</to>
+        </copy>
+      </assign>
+      <assign name="AssignStartDateTime">
+        <copy>
+          <from>xp20:current-dateTime()</from>
+          <to>$StartDateTime</to>
+        </copy>
+      </assign>
+    </sequence>
+    <scope name="IPPN_REALI_PRDKS_BRU">
+      <faultHandlers>
+        <catchAll>
+          <sequence name="PNAmrBruto_ErrorHandling">
+            <assign name="Assign_Fault">
+              <copy>
+                <from>substring-before(substring-after(ora:getFaultAsString(),'&lt;code&gt;'),'&lt;/code&gt;')</from>
+                <to>$fault/ns6:code</to>
+              </copy>
+              <copy>
+                <from>substring-before(substring-after(ora:getFaultAsString(),'&lt;summary&gt;'),'&lt;/summary&gt;')</from>
+                <to>$fault/ns6:summary</to>
+              </copy>
+              <copy>
+                <from>substring-before(substring-after(ora:getFaultAsString(),'&lt;detail&gt;'),'&lt;/detail&gt;')</from>
+                <to>$fault/ns6:details</to>
+              </copy>
+            </assign>
+            <assign name="Assign_Response">
+              <copy>
+                <from>$fault/ns6:code</from>
+                <to>$Response/ns7:response/ns7:ErrorCode</to>
+              </copy>
+              <copy>
+                <from>$fault/ns6:summary</from>
+                <to>$Response/ns7:response/ns7:ErrorMessage</to>
+              </copy>
+            </assign>
+            <sequence name="UpdateDBPNAmr">
+              <assign name="XQTransformErrorUpdateDB">
+                <bpelx:annotation>
+                  <bpelx:pattern patternName="bpelx:xquery"></bpelx:pattern>
+                </bpelx:annotation>
+                <copy>
+                  <from>ora:processXQuery10('../Transformations/T_UpdateErrorDBPNAmrBruto.xqy', 'ReceiveInput_receive_InputVariable.AmrBrutoCollection', $ReceiveInput_receive_InputVariable.AmrBrutoCollection, 'Response', $Response)</from>
+                  <to variable="InvokeErrordbUpdatePNAmrBruto_update_InputVariable" part="AmrBrutoCollection"/>
+                </copy>
+              </assign>
+              <invoke name="InvokeErrordbUpdatePNAmrBruto" partnerLink="dbUpdatePNAmrBruto"
+                      portType="ns3:dbUpdatePNAmrBruto_ptt" operation="update"
+                      inputVariable="InvokeErrordbUpdatePNAmrBruto_update_InputVariable" bpelx:invokeAsDetail="no"/>
+            </sequence>
+            <sequence name="SendMailNotification">
+              <assign name="AssignInputMail">
+                <copy>
+                  <from>concat('Nama Service :',"&amp;#13;",concat(ora:getFlowId(),' - ',normalize-space($ServiceName)),"&amp;#13;","&amp;#13;",'Input Request :',"&amp;#13;",normalize-space(ora:toCDATA($ReceiveInput_receive_InputVariable.AmrBrutoCollection)), "&amp;#13;", "&amp;#13;",'Output Response :',"&amp;#13;",normalize-space(ora:toCDATA($Response)), "&amp;#13;", "&amp;#13;",'Fault :',"&amp;#13;",normalize-space(ora:toCDATA(ora:getFaultAsXML())))</from>
+                  <to>$InvokeErrorEBSSendMailNotification_execute_InputVariable.payload/ns11:InputString</to>
+                </copy>
+              </assign>
+              <invoke name="InvokeErrorEBSSendMailNotification"
+                      partnerLink="EBSSendMailNotification" portType="ns1:execute_ptt" operation="execute"
+                      inputVariable="InvokeErrorEBSSendMailNotification_execute_InputVariable"
+                      outputVariable="InvokeErrorEBSSendMailNotification_execute_OutputVariable"
+                      bpelx:invokeAsDetail="no"/>
+            </sequence>
+            <sequence name="WriteLogFile">
+              <assign name="AssignErrorLogFileUtil">
+                <copy>
+                  <from>'ERROR'</from>
+                  <to>$InvokeErrorEBSLogFileUtility_writeLog_InputVariable.input_msg/ns9:level</to>
+                </copy>
+                <copy>
+                  <from>concat('IP-MW-SOA',' || ',ora:getFlowId(),' || ','Start Process ',$ServiceName,'  --&gt; Request Payload = ',normalize-space(ora:toCDATA($ReceiveInput_receive_InputVariable.AmrBrutoCollection)),' || ', 'Request ',$ServiceName,': ','Payload = ',normalize-space(ora:toCDATA($InvokeIPPN_REALI_PRDKS_BRU_SyncIPPN_REALI_PRDKS_BRU_InputVariable.parameters)),' || ','Response ',$ServiceName,': ','Payload = ',normalize-space(ora:toCDATA(ora:getFaultAsXML())),' || ','End Process ',$ServiceName,'. Total time executed ',round((xp20:seconds-from-dateTime((xp20:current-dateTime()))-xp20:seconds-from-dateTime($StartDateTime))*1000),' millis.')</from>
+                  <to>$InvokeErrorEBSLogFileUtility_writeLog_InputVariable.input_msg/ns9:message</to>
+                </copy>
+                <copy>
+                  <from>$ServiceName</from>
+                  <to>$InvokeErrorEBSLogFileUtility_writeLog_InputVariable.input_msg/ns9:serviceName</to>
+                </copy>
+              </assign>
+              <invoke name="InvokeErrorEBSLogFileUtility" partnerLink="EBSLogFileUtility"
+                      portType="ns2:writeLog_ptt" operation="writeLog"
+                      inputVariable="InvokeErrorEBSLogFileUtility_writeLog_InputVariable"
+                      outputVariable="InvokeErrorEBSLogFileUtility_writeLog_OutputVariable" bpelx:invokeAsDetail="no"/>
+            </sequence>
+            <exit name="Exit"/>
+          </sequence>
+        </catchAll>
+      </faultHandlers>
+      <sequence name="IPPN_REALI_PRDKS_BRU">
+        <sequence name="CheckMeterID">
+          <assign name="TransformationInputCheckMeter">
+            <bpelx:annotation>
+              <bpelx:pattern patternName="bpelx:transformation"></bpelx:pattern>
+            </bpelx:annotation>
+            <copy>
+              <from>ora:doXSLTransformForDoc("../Transformations/T_CheckMeterID.xsl", $ReceiveInput_receive_InputVariable.AmrBrutoCollection)</from>
+              <to variable="QueryIPPN_METER_QueryIPPN_METER_InputVariable" part="parameters"/>
+            </copy>
+          </assign>
+          <invoke name="QueryIPPN_METER" partnerLink="QueryIPPN_METER"
+                  portType="ns12:IPPN_METERPortType" operation="QueryIPPN_METER"
+                  inputVariable="QueryIPPN_METER_QueryIPPN_METER_InputVariable"
+                  outputVariable="QueryIPPN_METER_QueryIPPN_METER_OutputVariable" bpelx:invokeAsDetail="no"/>
+        </sequence>
+        <if name="IfMeterID">
+          <documentation>
+            <![CDATA[Exist]]>
+          </documentation>
+          <condition>count($QueryIPPN_METER_QueryIPPN_METER_OutputVariable.parameters/ns10:IPPN_METERSet/ns10:IPPN_METER/ns10:METERID)&gt;0</condition>
+          <sequence name="InvokeMX">
+            <assign name="TransformationInput">
+              <bpelx:annotation>
+                <bpelx:pattern patternName="bpelx:transformation"></bpelx:pattern>
+              </bpelx:annotation>
+              <copy>
+                <from>ora:doXSLTransformForDoc("../Transformations/T_InputMX.xsl", $ReceiveInput_receive_InputVariable.AmrBrutoCollection)</from>
+                <to variable="InvokeIPPN_REALI_PRDKS_BRU_SyncIPPN_REALI_PRDKS_BRU_InputVariable" part="parameters"/>
+              </copy>
+            </assign>
+            <invoke name="InvokeIPPN_REALI_PRDKS_BRU" partnerLink="IPPN_REALI_PRDKS_BRU"
+                    portType="ns4:IPPN_REALI_PRDKS_BRUPortType" operation="SyncIPPN_REALI_PRDKS_BRU"
+                    inputVariable="InvokeIPPN_REALI_PRDKS_BRU_SyncIPPN_REALI_PRDKS_BRU_InputVariable"
+                    outputVariable="InvokeIPPN_REALI_PRDKS_BRU_SyncIPPN_REALI_PRDKS_BRU_OutputVariable"
+                    bpelx:invokeAsDetail="no"/>
+            <sequence name="Report_Success">
+              <assign name="AssignResponseSuccess">
+                <copy>
+                  <from>'00000'</from>
+                  <to>$Response/ns7:response/ns7:ErrorCode</to>
+                </copy>
+                <copy>
+                  <from>'SUCCESS'</from>
+                  <to>$Response/ns7:response/ns7:ErrorMessage</to>
+                </copy>
+              </assign>
+              <sequence name="UpdateSuccessDB">
+                <assign name="XQTransformUpdateSuccessDB">
+                  <bpelx:annotation>
+                    <bpelx:pattern patternName="bpelx:xquery"></bpelx:pattern>
+                  </bpelx:annotation>
+                  <copy>
+                    <from>ora:processXQuery10('../Transformations/T_UpdateSuccessDBPNAmrBruto.xqy', 'ReceiveInput_receive_InputVariable.AmrBrutoCollection', $ReceiveInput_receive_InputVariable.AmrBrutoCollection, 'Response', $Response)</from>
+                    <to variable="InvokeSuccessdbUpdatePNAmrBruto_update_InputVariable" part="AmrBrutoCollection"/>
+                  </copy>
+                </assign>
+                <invoke name="InvokeSuccessdbUpdatePNAmrBruto" partnerLink="dbUpdatePNAmrBruto"
+                        portType="ns3:dbUpdatePNAmrBruto_ptt" operation="update"
+                        inputVariable="InvokeSuccessdbUpdatePNAmrBruto_update_InputVariable" bpelx:invokeAsDetail="no"/>
+              </sequence>
+              <sequence name="WriteLogSuccess">
+                <assign name="AssignLogFileSuccess">
+                  <copy>
+                    <from>'INFO'</from>
+                    <to>$InvokeSuccessEBSLogFileUtility_writeLog_InputVariable.input_msg/ns9:level</to>
+                  </copy>
+                  <copy>
+                    <from>concat('IP-MW-SOA',' || ',ora:getFlowId(),' || ','Start Process ',$ServiceName,' --&gt; Request Payload = ',normalize-space(ora:toCDATA($ReceiveInput_receive_InputVariable.AmrBrutoCollection)),' || ', 'Request ',$ServiceName,': ','Payload = ',normalize-space(ora:toCDATA($InvokeIPPN_REALI_PRDKS_BRU_SyncIPPN_REALI_PRDKS_BRU_InputVariable.parameters)),' || ','Response ',$ServiceName,': ','Payload = ',normalize-space(ora:toCDATA($InvokeIPPN_REALI_PRDKS_BRU_SyncIPPN_REALI_PRDKS_BRU_OutputVariable.parameters)),' || ','End Process ',$ServiceName,'. Total time executed ',round((xp20:seconds-from-dateTime((xp20:current-dateTime()))-xp20:seconds-from-dateTime($StartDateTime))*1000),' millis.')</from>
+                    <to>$InvokeSuccessEBSLogFileUtility_writeLog_InputVariable.input_msg/ns9:message</to>
+                  </copy>
+                  <copy>
+                    <from>$ServiceName</from>
+                    <to>$InvokeSuccessEBSLogFileUtility_writeLog_InputVariable.input_msg/ns9:serviceName</to>
+                  </copy>
+                </assign>
+                <invoke name="InvokeSuccessEBSLogFileUtility" partnerLink="EBSLogFileUtility"
+                        portType="ns2:writeLog_ptt" operation="writeLog"
+                        inputVariable="InvokeSuccessEBSLogFileUtility_writeLog_InputVariable"
+                        outputVariable="InvokeSuccessEBSLogFileUtility_writeLog_OutputVariable"
+                        bpelx:invokeAsDetail="no"/>
+              </sequence>
+            </sequence>
+          </sequence>
+          <else>
+            <sequence name="SendResponseMeterNotFound">
+              <assign name="Report_MeterNotFound">
+                <copy>
+                  <from>'MX-00001'</from>
+                  <to>$Response/ns7:response/ns7:ErrorCode</to>
+                </copy>
+                <copy>
+                  <from>'METER ID IS NOT FOUND'</from>
+                  <to>$Response/ns7:response/ns7:ErrorMessage</to>
+                </copy>
+              </assign>
+              <sequence name="UpdateMeterNotFound">
+                <assign name="XQTransformInvokeMeterNotFound_dbUpdatePNAmrBruto">
+                  <bpelx:annotation>
+                    <bpelx:pattern patternName="bpelx:xquery"></bpelx:pattern>
+                  </bpelx:annotation>
+                  <copy>
+                    <from>ora:processXQuery10('../Transformations/T_InvokeMeterNotFound_dbUpdatePNAmrBruto.xqy', 'ReceiveInput_receive_InputVariable.AmrBrutoCollection', $ReceiveInput_receive_InputVariable.AmrBrutoCollection, 'Response', $Response)</from>
+                    <to variable="InvokeMeterNotFound_dbUpdatePNAmrBruto_update_InputVariable" part="AmrBrutoCollection"/>
+                  </copy>
+                </assign>
+                <invoke name="InvokeMeterNotFound_dbUpdatePNAmrBruto"
+                        partnerLink="dbUpdatePNAmrBruto" portType="ns3:dbUpdatePNAmrBruto_ptt" operation="update"
+                        inputVariable="InvokeMeterNotFound_dbUpdatePNAmrBruto_update_InputVariable"
+                        bpelx:invokeAsDetail="no"/>
+              </sequence>
+              <sequence name="MailMeterNotFound">
+                <assign name="AssignSendMail">
+                  <copy>
+                    <from>concat('Nama Service :',"&amp;#13;",concat(ora:getFlowId(),' - ',normalize-space($ServiceName)),"&amp;#13;","&amp;#13;",'Input Request :',"&amp;#13;",normalize-space(ora:toCDATA($ReceiveInput_receive_InputVariable.AmrBrutoCollection)), "&amp;#13;", "&amp;#13;",'Output Response :',"&amp;#13;",normalize-space(ora:toCDATA($Response)), "&amp;#13;", "&amp;#13;",'Fault :',"&amp;#13;",normalize-space(ora:toCDATA($Response)))</from>
+                    <to>$InvokeMeterNotFound_EBSSendMailNotification_execute_InputVariable.payload/ns11:InputString</to>
+                  </copy>
+                </assign>
+                <invoke name="InvokeMeterNotFound_EBSSendMailNotification"
+                        partnerLink="EBSSendMailNotification" portType="ns1:execute_ptt" operation="execute"
+                        inputVariable="InvokeMeterNotFound_EBSSendMailNotification_execute_InputVariable"
+                        outputVariable="InvokeMeterNotFound_EBSSendMailNotification_execute_OutputVariable"
+                        bpelx:invokeAsDetail="no"/>
+              </sequence>
+              <sequence name="LogMeterNotFound">
+                <assign name="AssignLogFile">
+                  <copy>
+                    <from>concat('IP-MW-SOA',' || ',ora:getFlowId(),' || ','Start Process ',$ServiceName,'  --&gt; Request Payload = ',normalize-space(ora:toCDATA($ReceiveInput_receive_InputVariable.AmrBrutoCollection)),' || ', 'Request ',$ServiceName,': ','Payload = ',normalize-space(ora:toCDATA($QueryIPPN_METER_QueryIPPN_METER_InputVariable.parameters)),' || ','Response ',$ServiceName,': ','Payload = ',normalize-space(ora:toCDATA($QueryIPPN_METER_QueryIPPN_METER_OutputVariable.parameters)),' || ','End Process ',$ServiceName,'. Total time executed ',round((xp20:seconds-from-dateTime((xp20:current-dateTime()))-xp20:seconds-from-dateTime($StartDateTime))*1000),' millis.')</from>
+                    <to>$InvokeLogFileMeterNotFound_EBSLogFileUtility_writeLog_InputVariable.input_msg/ns9:message</to>
+                  </copy>
+                  <copy>
+                    <from>$ServiceName</from>
+                    <to>$InvokeLogFileMeterNotFound_EBSLogFileUtility_writeLog_InputVariable.input_msg/ns9:serviceName</to>
+                  </copy>
+                  <copy>
+                    <from>'ERROR'</from>
+                    <to>$InvokeLogFileMeterNotFound_EBSLogFileUtility_writeLog_InputVariable.input_msg/ns9:level</to>
+                  </copy>
+                </assign>
+                <invoke name="InvokeLogFileMeterNotFound_EBSLogFileUtility"
+                        partnerLink="EBSLogFileUtility" portType="ns2:writeLog_ptt" operation="writeLog"
+                        inputVariable="InvokeLogFileMeterNotFound_EBSLogFileUtility_writeLog_InputVariable"
+                        outputVariable="InvokeLogFileMeterNotFound_EBSLogFileUtility_writeLog_OutputVariable"
+                        bpelx:invokeAsDetail="no"/>
+              </sequence>
+              <exit name="Abort"/>
+            </sequence>
+          </else>
+        </if>
+      </sequence>
+    </scope>
+  </sequence>
+</process>
